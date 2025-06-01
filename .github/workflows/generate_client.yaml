@@ -67,9 +67,12 @@ jobs:
       - name: 📝 Commit & Push Changes
         working-directory: dart_client
         run: |
+          git init
+          git remote add origin https://github.com/joicodev/orion_gem_dart_client.git
+          git fetch origin
+          git checkout -b auto/sdk-release-v${{ steps.version.outputs.version }}
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
-          git checkout -b auto/sdk-release-v${{ steps.version.outputs.version }}
           git add .
           git commit -m "🔄 Auto-generated SDK v${{ steps.version.outputs.version }}"
           git push origin auto/sdk-release-v${{ steps.version.outputs.version }}
@@ -84,7 +87,7 @@ jobs:
           body: "This PR contains an auto-generated SDK update based on latest Swagger."
 
       - name: 🏷️ Create Git Tag
+        working-directory: dart_client
         run: |
           git tag v${{ steps.version.outputs.version }}
           git push origin v${{ steps.version.outputs.version }}
-        working-directory: dart_client
