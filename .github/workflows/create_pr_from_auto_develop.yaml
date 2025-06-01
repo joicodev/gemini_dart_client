@@ -1,0 +1,54 @@
+name: Create PR from auto/develop to develop
+
+# This workflow triggers on any push to the 'auto/develop' branch
+on:
+  push:
+    branches:
+      - auto/develop
+
+jobs:
+  create_pull_request:
+    runs-on: ubuntu-latest
+    # Define permissions required by the job
+    permissions:
+      contents: read      # Needed to checkout the repository
+      pull-requests: write # Needed to create a pull request using gh CLI
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4 # Using v4, ensure your repo is compatible or use v3
+
+      - name: Check for existing Open PR
+        id: check_pr # Assign an ID to this step to reference its outputs
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }} # Pass the PAT_TOKEN to access gh CLI
+        run: |
+          # List open PRs from auto/develop to develop.
+          # Fetches the PR number if one exists, otherwise PR_NUMBER will be empty.
+          # The --jq '.[0].number // ""' part ensures an empty string if no PR is found (jq returns null).
+          PR_NUMBER=$(gh pr list --repo ${{ github.repository }} --head auto/develop --base develop --state open --json number --jq '.[0].number // ""')
+          
+          if [[ -n "$PR_NUMBER" ]]; then
+            echo "An open PR (#${PR_NUMBER}) from 'auto/develop' to 'develop' already exists."
+            echo "pr_exists=true" >> $GITHUB_OUTPUT # Set output for conditional step execution
+          else
+            echo "No existing open PR found from 'auto/develop' to 'develop'."
+            echo "pr_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request if none exists
+        if: steps.check_pr.outputs.pr_exists == 'false' # Run only if no PR exists
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }} # Pass the PAT_TOKEN
+        run: |
+          gh pr create \
+            --repo ${{ github.repository }} \
+            --base develop \
+            --head auto/develop \
+            --title "🤖 SDK Auto-PR: Merge auto-generated changes from auto/develop" \
+            --body "This Pull Request was automatically created to merge the latest auto-generated Dart client SDK from the \`auto/develop\` branch into the \`develop\` branch."
+          echo "Pull Request created successfully."
+
+      - name: Notify if PR already exists
+        if: steps.check_pr.outputs.pr_exists == 'true' # Run only if PR already exists
+        run: echo "Skipping PR creation as an open PR from 'auto/develop' to 'develop' already exists."
