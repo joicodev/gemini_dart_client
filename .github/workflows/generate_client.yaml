@@ -1,0 +1,90 @@
+name: Generate Dart Client SDK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate-client:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: 📥 Checkout Dart Client Repository
+        uses: actions/checkout@v3
+        with:
+          path: dart_client
+
+      - name: 🧪 Clone Nest API Repository
+        uses: actions/checkout@v3
+        with:
+          repository: joicodev/orion_gem_nest_api
+          ref: develop
+          path: nest_api
+
+      - name: 🛠️ Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: 🧩 Install API Dependencies
+        working-directory: nest_api
+        run: npm install
+
+      - name: 🚀 Start Nest API in Background
+        working-directory: nest_api
+        run: |
+          nohup npm run start:dev &
+
+      - name: ⏱️ Wait for Swagger to be Ready
+        run: |
+          until curl --output /dev/null --silent --head --fail http://localhost:3000/api-json; do
+            echo "Waiting for Swagger..."
+            sleep 5
+          done
+
+      - name: 🐹 Setup Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: ⚙️ Install openapi-generator-cli
+        run: |
+          npm install @openapitools/openapi-generator-cli -g
+
+      - name: ✅ Make script executable
+        working-directory: dart_client
+        run: chmod +x client_generator.sh
+
+      - name: ⚙️ Run client_generator.sh
+        working-directory: dart_client
+        run: ./client_generator.sh
+
+      - name: 🔍 Extract New Version from pubspec.yaml
+        id: version
+        working-directory: dart_client
+        run: |
+          version=$(grep '^version:' pubspec.yaml | cut -d ' ' -f2)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: 📝 Commit & Push Changes
+        working-directory: dart_client
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git checkout -b auto/sdk-release-v${{ steps.version.outputs.version }}
+          git add .
+          git commit -m "🔄 Auto-generated SDK v${{ steps.version.outputs.version }}"
+          git push origin auto/sdk-release-v${{ steps.version.outputs.version }}
+
+      - name: 📦 Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
+          head: auto/sdk-release-v${{ steps.version.outputs.version }}
+          title: "🔄 Auto-generated SDK v${{ steps.version.outputs.version }}"
+          body: "This PR contains an auto-generated SDK update based on latest Swagger."
+
+      - name: 🏷️ Create Git Tag
+        run: |
+          git tag v${{ steps.version.outputs.version }}
+          git push origin v${{ steps.version.outputs.version }}
+        working-directory: dart_client
