@@ -9,28 +9,29 @@ on:
 jobs:
   create_pull_request:
     runs-on: ubuntu-latest
-    # Define permissions required by the job
+    # Define permissions required by the job for the GITHUB_TOKEN used by the runner
     permissions:
       contents: read      # Needed to checkout the repository
-      pull-requests: write # Needed to create a pull request using gh CLI
-
+      pull-requests: write # Needed to create a pull request if using GITHUB_TOKEN for gh
+    
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4 # Using v4, ensure your repo is compatible or use v3
+        uses: actions/checkout@v4
 
       - name: Check for existing Open PR
-        id: check_pr # Assign an ID to this step to reference its outputs
+        id: check_pr
         env:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }} # Pass the PAT_TOKEN to access gh CLI
+          # Use GH_TOKEN for GitHub CLI if using a PAT.
+          # Ensure secrets.PAT_TOKEN has 'repo' scope for PR creation and reading.
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }} 
         run: |
           # List open PRs from auto/develop to develop.
           # Fetches the PR number if one exists, otherwise PR_NUMBER will be empty.
-          # The --jq '.[0].number // ""' part ensures an empty string if no PR is found (jq returns null).
           PR_NUMBER=$(gh pr list --repo ${{ github.repository }} --head auto/develop --base develop --state open --json number --jq '.[0].number // ""')
           
           if [[ -n "$PR_NUMBER" ]]; then
             echo "An open PR (#${PR_NUMBER}) from 'auto/develop' to 'develop' already exists."
-            echo "pr_exists=true" >> $GITHUB_OUTPUT # Set output for conditional step execution
+            echo "pr_exists=true" >> $GITHUB_OUTPUT
           else
             echo "No existing open PR found from 'auto/develop' to 'develop'."
             echo "pr_exists=false" >> $GITHUB_OUTPUT
@@ -39,7 +40,8 @@ jobs:
       - name: Create Pull Request if none exists
         if: steps.check_pr.outputs.pr_exists == 'false' # Run only if no PR exists
         env:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }} # Pass the PAT_TOKEN
+          # Use GH_TOKEN for GitHub CLI if using a PAT.
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           gh pr create \
             --repo ${{ github.repository }} \
