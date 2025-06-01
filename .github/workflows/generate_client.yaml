@@ -64,29 +64,17 @@ jobs:
           version=$(grep '^version:' pubspec.yaml | cut -d ' ' -f2)
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
-      - name: 📝 Commit & Push Changes
+      - name: 📝 Commit & Push to auto/develop
         working-directory: dart_client
         run: |
-          git init
-          git fetch origin
-          git checkout -b auto/sdk-release-v${{ steps.version.outputs.version }}
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
+          git fetch origin
+          if git ls-remote --exit-code --heads origin auto/develop; then
+            git checkout auto/develop
+          else
+            git checkout -b auto/develop
+          fi
           git add .
-          git commit -m "🔄 Auto-generated SDK v${{ steps.version.outputs.version }}"
-          git push origin auto/sdk-release-v${{ steps.version.outputs.version }}
-
-      - name: 📦 Create Pull Request
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          base: main
-          head: auto/sdk-release-v${{ steps.version.outputs.version }}
-          title: "🔄 Auto-generated SDK v${{ steps.version.outputs.version }}"
-          body: "This PR contains an auto-generated SDK update based on latest Swagger."
-
-      - name: 🏷️ Create Git Tag
-        working-directory: dart_client
-        run: |
-          git tag v${{ steps.version.outputs.version }}
-          git push origin v${{ steps.version.outputs.version }}
+          git commit -m "🔄 Auto-generated SDK v${{ steps.version.outputs.version }}" || echo "No changes to commit"
+          git push origin auto/develop
