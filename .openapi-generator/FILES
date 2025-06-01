@@ -4,7 +4,7 @@ README.md
 analysis_options.yaml
 doc/BasicPromptDto.md
 doc/GeminiApi.md
-lib/orion_gem_dart_client.dart
+lib/orion_gem_nest_dart_client.dart
 lib/src/api.dart
 lib/src/api/gemini_api.dart
 lib/src/api_util.dart

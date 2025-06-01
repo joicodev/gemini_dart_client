@@ -5,7 +5,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:orion_gem_dart_client/src/auth/auth.dart';
+import 'package:orion_gem_nest_dart_client/src/auth/auth.dart';
 
 class BasicAuthInfo {
   final String username;

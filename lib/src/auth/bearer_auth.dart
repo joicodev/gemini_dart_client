@@ -3,7 +3,7 @@
 //
 
 import 'package:dio/dio.dart';
-import 'package:orion_gem_dart_client/src/auth/auth.dart';
+import 'package:orion_gem_nest_dart_client/src/auth/auth.dart';
 
 class BearerAuthInterceptor extends AuthInterceptor {
   final Map<String, String> tokens = {};

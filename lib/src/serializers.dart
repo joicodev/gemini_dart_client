@@ -11,10 +11,10 @@ import 'package:built_value/json_object.dart';
 import 'package:built_value/serializer.dart';
 import 'package:built_value/standard_json_plugin.dart';
 import 'package:built_value/iso_8601_date_time_serializer.dart';
-import 'package:orion_gem_dart_client/src/date_serializer.dart';
-import 'package:orion_gem_dart_client/src/model/date.dart';
+import 'package:orion_gem_nest_dart_client/src/date_serializer.dart';
+import 'package:orion_gem_nest_dart_client/src/model/date.dart';
 
-import 'package:orion_gem_dart_client/src/model/basic_prompt_dto.dart';
+import 'package:orion_gem_nest_dart_client/src/model/basic_prompt_dto.dart';
 
 part 'serializers.g.dart';
 

@@ -1,8 +1,8 @@
-# orion_gem_dart_client.model.BasicPromptDto
+# orion_gem_nest_dart_client.model.BasicPromptDto
 
 ## Load the model package
 ```dart
-import 'package:orion_gem_dart_client/api.dart';
+import 'package:orion_gem_nest_dart_client/api.dart';
 ```
 
 ## Properties
