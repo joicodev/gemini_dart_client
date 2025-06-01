@@ -1,0 +1,80 @@
+name: Generate Dart Client SDK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate-client:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: 📥 Checkout Dart Client Repository
+        uses: actions/checkout@v3
+        with:
+          path: dart_client
+
+      - name: 🧪 Clone Nest API Repository
+        uses: actions/checkout@v3
+        with:
+          repository: joicodev/orion_gem_nest_api
+          ref: develop
+          path: nest_api
+
+      - name: 🛠️ Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: 🧩 Install API Dependencies
+        working-directory: nest_api
+        run: npm install
+
+      - name: 🚀 Start Nest API in Background
+        working-directory: nest_api
+        run: |
+          nohup npm run start:dev &
+
+      - name: ⏱️ Wait for Swagger to be Ready
+        run: |
+          until curl --output /dev/null --silent --head --fail http://localhost:3000/api-json; do
+            echo "Waiting for Swagger..."
+            sleep 5
+          done
+
+      - name: 🐹 Setup Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: ⚙️ Install openapi-generator-cli
+        run: |
+          npm install @openapitools/openapi-generator-cli -g
+
+      - name: ✅ Make script executable
+        working-directory: dart_client
+        run: chmod +x client_generator.sh
+
+      - name: ⚙️ Run client_generator.sh
+        working-directory: dart_client
+        run: ./client_generator.sh
+
+      - name: 🔍 Extract New Version from pubspec.yaml
+        id: version
+        working-directory: dart_client
+        run: |
+          version=$(grep '^version:' pubspec.yaml | cut -d ' ' -f2)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: 📝 Commit & Push to auto/develop
+        working-directory: dart_client
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git fetch origin
+          if git ls-remote --exit-code --heads origin auto/develop; then
+            git checkout auto/develop
+          else
+            git checkout -b auto/develop
+          fi
+          git add .
+          git commit -m "🔄 Auto-generated SDK v${{ steps.version.outputs.version }}" || echo "No changes to commit"
+          git push origin auto/develop
