@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:orion_gem_dart_client/orion_gem_dart_client.dart';
+import 'package:orion_gem_nest_dart_client/orion_gem_nest_dart_client.dart';
 
 // tests for BasicPromptDto
 void main() {

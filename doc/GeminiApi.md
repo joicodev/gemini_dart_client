@@ -1,8 +1,8 @@
-# orion_gem_dart_client.api.GeminiApi
+# orion_gem_nest_dart_client.api.GeminiApi
 
 ## Load the API package
 ```dart
-import 'package:orion_gem_dart_client/api.dart';
+import 'package:orion_gem_nest_dart_client/api.dart';
 ```
 
 All URIs are relative to *http://localhost*
@@ -20,9 +20,9 @@ Basic prompt
 
 ### Example
 ```dart
-import 'package:orion_gem_dart_client/api.dart';
+import 'package:orion_gem_nest_dart_client/api.dart';
 
-final api = OrionGemDartClient().getGeminiApi();
+final api = OrionGemNestDartClient().getGeminiApi();
 final BasicPromptDto basicPromptDto = ; // BasicPromptDto | 
 
 try {
@@ -61,9 +61,9 @@ Basic prompt stream
 
 ### Example
 ```dart
-import 'package:orion_gem_dart_client/api.dart';
+import 'package:orion_gem_nest_dart_client/api.dart';
 
-final api = OrionGemDartClient().getGeminiApi();
+final api = OrionGemNestDartClient().getGeminiApi();
 final BasicPromptDto basicPromptDto = ; // BasicPromptDto | 
 
 try {

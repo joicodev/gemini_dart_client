@@ -8,7 +8,7 @@ import 'package:built_value/json_object.dart';
 import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
-import 'package:orion_gem_dart_client/src/model/basic_prompt_dto.dart';
+import 'package:orion_gem_nest_dart_client/src/model/basic_prompt_dto.dart';
 
 class GeminiApi {
 
