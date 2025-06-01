@@ -68,7 +68,6 @@ jobs:
         working-directory: dart_client
         run: |
           git init
-          git remote add origin https://github.com/joicodev/orion_gem_dart_client.git
           git fetch origin
           git checkout -b auto/sdk-release-v${{ steps.version.outputs.version }}
           git config user.name "GitHub Actions"
