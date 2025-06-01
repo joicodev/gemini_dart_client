@@ -4,7 +4,7 @@
 SWAGGER_URL="http://localhost:3000/api-json"
 OUTPUT_DIR="."
 GENERATOR="dart-dio"
-PACKAGE_NAME="orion_gem_dart_client"
+PACKAGE_NAME="orion_gem_nest_dart_client"
 DEFAULT_VERSION="1.0.0"
 INCREMENT_PART="patch"  # or: major / minor / patch
 
