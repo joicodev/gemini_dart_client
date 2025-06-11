@@ -8,6 +8,7 @@ import 'package:built_value/json_object.dart';
 import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
+import 'dart:typed_data';
 import 'package:orion_gem_nest_dart_client/src/model/basic_prompt_dto.dart';
 
 class GeminiApi {
@@ -122,9 +123,9 @@ class GeminiApi {
   /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
   /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
   ///
-  /// Returns a [Future] containing a [Response] with a [String] as data
+  /// Returns a [Future] containing a [Response] with a [Uint8List] as data
   /// Throws [DioException] if API call or serialization fails
-  Future<Response<String>> geminiControllerBasicPromptStream({ 
+  Future<Response<Uint8List>> geminiControllerBasicPromptStream({ 
     required BasicPromptDto basicPromptDto,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -136,6 +137,7 @@ class GeminiApi {
     final _path = r'/api/gemini/basic-prompt-stream';
     final _options = Options(
       method: r'POST',
+      responseType: ResponseType.bytes,
       headers: <String, dynamic>{
         ...?headers,
       },
@@ -174,11 +176,11 @@ class GeminiApi {
       onReceiveProgress: onReceiveProgress,
     );
 
-    String? _responseData;
+    Uint8List? _responseData;
 
     try {
       final rawResponse = _response.data;
-      _responseData = rawResponse == null ? null : rawResponse as String;
+      _responseData = rawResponse == null ? null : rawResponse as Uint8List;
 
     } catch (error, stackTrace) {
       throw DioException(
@@ -190,7 +192,7 @@ class GeminiApi {
       );
     }
 
-    return Response<String>(
+    return Response<Uint8List>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
