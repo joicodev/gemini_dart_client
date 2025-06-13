@@ -16,7 +16,7 @@ void main() {
 
     // Basic prompt stream
     //
-    //Future<Uint8List> geminiControllerBasicPromptStream(BasicPromptDto basicPromptDto) async
+    //Future<String> geminiControllerBasicPromptStream(BasicPromptDto basicPromptDto) async
     test('test geminiControllerBasicPromptStream', () async {
       // TODO
     });
