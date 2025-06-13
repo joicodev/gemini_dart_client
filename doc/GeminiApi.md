@@ -55,7 +55,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **geminiControllerBasicPromptStream**
-> Uint8List geminiControllerBasicPromptStream(basicPromptDto)
+> String geminiControllerBasicPromptStream(basicPromptDto)
 
 Basic prompt stream
 
@@ -82,7 +82,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**Uint8List**](Uint8List.md)
+**String**
 
 ### Authorization
 
@@ -91,7 +91,7 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: application/json
- - **Accept**: text/plain
+ - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
